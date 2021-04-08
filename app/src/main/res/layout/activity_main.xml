@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
+
+
+    <TextView
+        android:id="@+id/textAPPVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version: "
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonExit" />
+
+    <TextView
+        android:id="@+id/textPath"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="請先選取音檔路徑"
+        app:layout_constraintBottom_toTopOf="@+id/userName"
+        app:layout_constraintEnd_toEndOf="@+id/userName"
+        app:layout_constraintStart_toStartOf="@+id/userName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <EditText
+        android:id="@+id/userName"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:hint="標記醫師代號"
+        android:maxLines="1"
+        app:layout_constraintBottom_toTopOf="@+id/buttonOpen"
+        app:layout_constraintEnd_toEndOf="@+id/buttonOpen"
+        app:layout_constraintStart_toStartOf="@+id/buttonOpen"
+        app:layout_constraintTop_toBottomOf="@+id/textPath" />
+
+    <Button
+        android:id="@+id/buttonOpen"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="選取音檔位置"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLabel"
+        app:layout_constraintEnd_toEndOf="@+id/buttonLabel"
+        app:layout_constraintStart_toStartOf="@+id/buttonLabel"
+        app:layout_constraintTop_toBottomOf="@+id/userName" />
+
+    <Button
+        android:id="@+id/buttonLabel"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="開始標記"
+        app:layout_constraintBottom_toTopOf="@+id/buttonUploadn"
+        app:layout_constraintEnd_toEndOf="@+id/buttonUploadn"
+        app:layout_constraintStart_toStartOf="@+id/buttonUploadn"
+        app:layout_constraintTop_toBottomOf="@+id/buttonOpen" />
+
+    <Button
+        android:id="@+id/buttonUploadn"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="上傳結果"
+        app:layout_constraintBottom_toTopOf="@+id/buttonExit"
+        app:layout_constraintEnd_toEndOf="@+id/buttonExit"
+        app:layout_constraintStart_toStartOf="@+id/buttonExit"
+        app:layout_constraintTop_toBottomOf="@+id/buttonLabel" />
+
+    <Button
+        android:id="@+id/buttonExit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="離開"
+        app:layout_constraintBottom_toTopOf="@+id/textAPPVersion"
+        app:layout_constraintEnd_toEndOf="@+id/textAPPVersion"
+        app:layout_constraintStart_toStartOf="@+id/textAPPVersion"
+        app:layout_constraintTop_toBottomOf="@+id/buttonUploadn" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
