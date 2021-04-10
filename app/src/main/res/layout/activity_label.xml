@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="64dp"
-        android:text="請選擇類別"
+        android:text="@string/choClass"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textClassName" />
@@ -56,11 +56,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
+        android:hint="@string/jumpTo"
         android:inputType="number"
-        android:hint="跳轉至..."
         android:maxLines="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textFileNumber" />
+        app:layout_constraintTop_toBottomOf="@+id/textFileNumber"
+        android:importantForAutofill="no" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/selectGroup"
@@ -131,13 +132,13 @@
             android:checked="false"
             android:text="@string/checkbox7" />
 
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            android:id="@+id/chip_8"-->
-        <!--            style="@style/Widget.MaterialComponents.Chip.Choice"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:checked="false"-->
-        <!--            android:text="@string/checkbox8" />-->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_8"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/checkbox8" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_9"

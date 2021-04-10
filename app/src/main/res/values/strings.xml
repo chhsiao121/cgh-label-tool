@@ -16,7 +16,7 @@
     <string name="checkbox5">舌根音化</string>
     <string name="checkbox6">不送氣音化</string>
     <string name="checkbox7">聲隨韻母</string>
-    <string name="checkbox8">扭曲音</string>
+    <string name="checkbox8">邊音化</string>
     <string name="checkbox9">齒間音</string>
     <string name="checkbox10">子音省略</string>
     <string name="checkbox11">擦音化</string>
@@ -124,5 +124,14 @@
     <string name="wordcard36_1">鳳梨</string>
     <string name="wordcard36_2">奶瓶</string>
     <string name="wordcard36_3">蓮蓬頭</string>
+    <string name="activateMainWoring">請先選取音檔路徑</string>
+    <string name="version">Version:</string>
+    <string name="resule">上傳結果</string>
+    <string name="startlabel">開始標記</string>
+    <string name="exit">離開</string>
+    <string name="userCode">標記醫師代號</string>
+    <string name="choFilePath">選取音檔位置</string>
+    <string name="choClass">請選擇類別</string>
+    <string name="jumpTo">跳轉至…</string>
 
 </resources>

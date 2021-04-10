@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class LabelActivity extends AppCompatActivity {
@@ -48,21 +46,21 @@ public class LabelActivity extends AppCompatActivity {
     public File[] files;
     public int select_file = 0;
     public int select_file_max = 0;
-
-    public MediaPlayer mediaPlayer ;
+    public boolean f_first_play = true;
+    public MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_label);
         mediaPlayer = new MediaPlayer();
-        FloatingActionButton buttonSave = (FloatingActionButton) findViewById(R.id.buttonSave);
-        FloatingActionButton buttonPlay = (FloatingActionButton) findViewById(R.id.buttonPlay);
-        FloatingActionButton buttonNext = (FloatingActionButton) findViewById(R.id.buttonNext);
-        FloatingActionButton buttonPrevious = (FloatingActionButton) findViewById(R.id.buttonPrevious);
-        FloatingActionButton buttonReset = (FloatingActionButton) findViewById(R.id.buttonReset);
-        EditText editIndex = (EditText)findViewById(R.id.editIndex);
-        ChipGroup selectGroup = (ChipGroup) findViewById(R.id.selectGroup);
+        FloatingActionButton buttonSave = findViewById(R.id.buttonSave);
+        FloatingActionButton buttonPlay = findViewById(R.id.buttonPlay);
+        FloatingActionButton buttonNext = findViewById(R.id.buttonNext);
+        FloatingActionButton buttonPrevious = findViewById(R.id.buttonPrevious);
+        FloatingActionButton buttonReset = findViewById(R.id.buttonReset);
+        EditText editIndex = findViewById(R.id.editIndex);
+        ChipGroup selectGroup = findViewById(R.id.selectGroup);
 
         Intent intent = getIntent();
         folder_path = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
@@ -80,11 +78,11 @@ public class LabelActivity extends AppCompatActivity {
         buttonNext.setOnClickListener(v -> {
             saveSelect2json();
             if (!TextUtils.isEmpty(editIndex.getText())) {
-                select_file=Integer.parseInt(editIndex.getText().toString())-1;
-                if(select_file>select_file_max)
-                    select_file=select_file_max;
-                else if(select_file<1)
-                    select_file=0;
+                select_file = Integer.parseInt(editIndex.getText().toString()) - 1;
+                if (select_file > select_file_max)
+                    select_file = select_file_max;
+                else if (select_file < 1)
+                    select_file = 0;
             } else {
                 if (select_file < select_file_max)
                     select_file = select_file + 1;
@@ -97,11 +95,11 @@ public class LabelActivity extends AppCompatActivity {
         buttonPrevious.setOnClickListener(v -> {
             saveSelect2json();
             if (!TextUtils.isEmpty(editIndex.getText())) {
-                select_file=Integer.parseInt(editIndex.getText().toString())-1;
-                if(select_file>select_file_max)
-                    select_file=select_file_max;
-                else if(select_file<1)
-                    select_file=0;
+                select_file = Integer.parseInt(editIndex.getText().toString()) - 1;
+                if (select_file > select_file_max)
+                    select_file = select_file_max;
+                else if (select_file < 1)
+                    select_file = 0;
             } else {
                 if (select_file > 0)
                     select_file = select_file - 1;
@@ -115,14 +113,17 @@ public class LabelActivity extends AppCompatActivity {
 
     }
 
-    protected void onStop () {
+    protected void onStop() {
         super.onStop();
         mediaPlayer.release();
         mediaPlayer = null;
     }
 
     public void playAudio() {
-        this.mediaPlayer.release();
+        if (f_first_play)
+            this.mediaPlayer.release();
+        else
+            f_first_play = false;
         this.mediaPlayer = new MediaPlayer();
         Uri myUri = Uri.fromFile(files[select_file]); // initialize Uri here
         mediaPlayer.setAudioAttributes(
@@ -142,11 +143,11 @@ public class LabelActivity extends AppCompatActivity {
 
 
     public void update_text_selectGroup() {
-        ChipGroup selectGroup = (ChipGroup) findViewById(R.id.selectGroup);
-        TextView textFileName = (TextView) findViewById(R.id.textFileName);
-        TextView textFileNumber = (TextView) findViewById(R.id.textFileNumber);
-        TextView textClassName = (TextView) findViewById(R.id.textClassName);
-        EditText editIndex = (EditText)findViewById(R.id.editIndex);
+        ChipGroup selectGroup = findViewById(R.id.selectGroup);
+        TextView textFileName = findViewById(R.id.textFileName);
+        TextView textFileNumber = findViewById(R.id.textFileNumber);
+        TextView textClassName = findViewById(R.id.textClassName);
+        EditText editIndex = findViewById(R.id.editIndex);
         editIndex.setText(null);
         selectGroup.clearCheck();
         String[] selectText;
@@ -174,7 +175,7 @@ public class LabelActivity extends AppCompatActivity {
 
     public void saveSelect2json() {
 
-        ChipGroup selectGroup = (ChipGroup) findViewById(R.id.selectGroup);
+        ChipGroup selectGroup = findViewById(R.id.selectGroup);
         StringBuilder selectClass = new StringBuilder();
         List<Integer> ids = selectGroup.getCheckedChipIds();
         for (Integer id : ids) {
@@ -215,18 +216,17 @@ public class LabelActivity extends AppCompatActivity {
         files = directory.listFiles();
 
         List<File> files_list = new ArrayList<>();
-        for(int i=0; i<files.length; i++)
-        {
+        for (int i = 0; i < files.length; i++) {
             File file = files[i];
             /*It's assumed that all file in the path are in supported type*/
             String filePath = file.getPath();
-            if(filePath.split("/")[filePath.split("/").length-1].split("_").length==5){
+            if (filePath.split("/")[filePath.split("/").length - 1].split("_").length == 5) {
                 files_list.add(file);
-            }else{
-                files[i]=null;
+            } else {
+                files[i] = null;
             }
         }
-        files = files_list .toArray(new File[0]);
+        files = files_list.toArray(new File[0]);
 
         if (directory.canRead() && files != null) {
             select_file_max = files.length - 1;

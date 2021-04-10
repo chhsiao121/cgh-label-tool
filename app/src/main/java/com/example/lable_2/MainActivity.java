@@ -1,6 +1,8 @@
 package com.example.lable_2;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,11 +16,15 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+
+import static com.example.lable_2.BuildConfig.VERSION_NAME;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,20 +40,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        int READ_EXTERNAL_STORAGE = 100;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE);
+
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        Button buttonOpen = (Button) findViewById(R.id.buttonOpen);
-        Button buttonUpload = (Button) findViewById(R.id.buttonUploadn);
-        Button buttonLabel = (Button) findViewById(R.id.buttonLabel);
+        Button buttonOpen = findViewById(R.id.buttonOpen);
+        Button buttonUpload = findViewById(R.id.buttonUploadn);
+        Button buttonLabel = findViewById(R.id.buttonLabel);
+        Button buttonExit = findViewById(R.id.buttonExit);
         buttonOpen.setOnClickListener(v -> openFileChooser());
         buttonLabel.setOnClickListener(this::startLabel);
         buttonUpload.setOnClickListener(v -> uploadFile());
+        buttonExit.setOnClickListener(v -> {
+            finish();
+            System.exit(0);
+        });
         TextView versionName = findViewById(R.id.textAPPVersion);
-        versionName.setText("version : " + BuildConfig.VERSION_NAME);
+        versionName.setText(String.format("version : %s", VERSION_NAME));
+
     }
 
     public void uploadFile() {
-        EditText userName = (EditText) findViewById(R.id.userName);
+        EditText userName = findViewById(R.id.userName);
         final String userNmae = userName.getText().toString();
         if (TextUtils.isEmpty(userNmae)) {
             userName.setError(REQUIRED);
@@ -60,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
                     Uri jsonUri = Uri.fromFile(f);
                     String fileName = jsonUri.toString().split("/")[jsonUri.toString().split("/").length - 1];
 //                    Log.e("name", fileName);
-                    final String uploadName=System.currentTimeMillis() + "." + userName.getText() + "." + fileName;
+                    final String uploadName = System.currentTimeMillis() + "." + VERSION_NAME + userName.getText() + "." + fileName;
                     Log.e("save_name", uploadName);
                     StorageReference Ref = mStorageRef.child(uploadName);
                     Ref.putFile(jsonUri)
                             .addOnSuccessListener(taskSnapshot -> {
 //                                Log.e("TAG", "Upload succesFully");
-                                Toast.makeText(getApplicationContext(), uploadName +"上傳成功", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), uploadName + "上傳成功", Toast.LENGTH_LONG).show();
                             })
                             .addOnFailureListener(exception -> Toast.makeText(getApplicationContext(), "保存失敗Q", Toast.LENGTH_LONG).show());
                 }
@@ -81,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(EXTRA_MESSAGE, PATH);
             startActivity(intent);
         } else {
-            Button buttonOpen = (Button) findViewById(R.id.buttonOpen);
+            Button buttonOpen = findViewById(R.id.buttonOpen);
             buttonOpen.setError(REQUIRED);
             Toast.makeText(getApplicationContext(), "請先選取音檔資料夾", Toast.LENGTH_LONG).show();
         }
@@ -109,8 +125,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setText(String text) {
-        TextView textView = (TextView) findViewById(R.id.textPath);
+        TextView textView = findViewById(R.id.textPath);
         textView.setText(text);
     }
+
 
 }
