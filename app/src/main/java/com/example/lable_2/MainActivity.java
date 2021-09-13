@@ -116,9 +116,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PICKFILE_RESULT_CODE && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             PATH = data.getData().getPath();
+//            Log.e("test", "PATH"+PATH);
             String[] bits = PATH.split("/");
             PATH = PATH.substring(0, PATH.length() - bits[bits.length - 1].length());
+//            Log.e("test", "PATH"+PATH);
             PATH = "/" + PATH.split(":")[1];
+//            Log.e("test", "PATH"+PATH);
             setText("已選取音檔路徑: " + PATH);
             f_load = Boolean.TRUE;
         }

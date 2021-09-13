@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -28,6 +29,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -35,6 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class LabelActivity extends AppCompatActivity {
@@ -73,7 +78,7 @@ public class LabelActivity extends AppCompatActivity {
 
         buttonPlay.setOnClickListener(v -> playAudio());
 
-        buttonReset.setOnClickListener(v -> selectGroup.clearCheck());
+        buttonReset.setOnClickListener(v -> selectGroup.clearCheck()); //清除所有ChipGroup的有選取的選項
 
         buttonNext.setOnClickListener(v -> {
             saveSelect2json();
@@ -109,7 +114,10 @@ public class LabelActivity extends AppCompatActivity {
             playAudio();
         });
 
-        buttonSave.setOnClickListener(v -> saveJson2Phone(target_name, jsonData));
+        buttonSave.setOnClickListener(v -> {
+            saveSelect2json();
+            saveJson2Phone(target_name, jsonData);
+        });
 
     }
 
@@ -142,7 +150,11 @@ public class LabelActivity extends AppCompatActivity {
     }
 
 
-    public void update_text_selectGroup() {
+
+
+
+
+    public void update_text_selectGroup() { //靠select_file設定label介面上的音檔名稱、字卡名稱、第幾個音檔，並更新ChipGroup裡的label
         ChipGroup selectGroup = findViewById(R.id.selectGroup);
         TextView textFileName = findViewById(R.id.textFileName);
         TextView textFileNumber = findViewById(R.id.textFileNumber);
@@ -152,11 +164,11 @@ public class LabelActivity extends AppCompatActivity {
         selectGroup.clearCheck();
         String[] selectText;
         try {
-            Object data = jsonData.get(files[select_file].getName());
+            Object data = jsonData.get(files[select_file].getName());//jsonData.get("16_36_1_k83_1n.wav")會拿到"16_36_1_k83_1n.wav"所對應的label
             selectText = data.toString().split(",");
             for (int i = 0; i < selectGroup.getChildCount(); i++) {
                 Chip chip = (Chip) selectGroup.getChildAt(i);
-                for (String s : selectText) {
+                for (String s : selectText) { //看selectGroup裡的chip是否與selectText裡的label相同，相同會將chip選取
                     if (chip.getText().equals(s)) {
                         chip.setChecked(true);
                     }
@@ -168,12 +180,13 @@ public class LabelActivity extends AppCompatActivity {
         textFileName.setText(files[select_file].getName());
         String nn = (select_file + 1) + " / " + (select_file_max + 1);
         textFileNumber.setText(nn);
+        //這裡如果tmp所得到的字卡編號，不在res/values/strings.xml所宣告的字卡中，等等getStringResourceByName所拿到的resid會有問題
         String tmp = "wordcard" + files[select_file].getName().split("_")[1] + "_" + files[select_file].getName().split("_")[2];
         textClassName.setText(getStringResourceByName(tmp));
     }
 
 
-    public void saveSelect2json() {
+    public void saveSelect2json() { //將此頁面上所對應的音檔與所選取的類別寫進jsonData，如果沒有類別則為""(jsonData尚未儲存成.json檔)
 
         ChipGroup selectGroup = findViewById(R.id.selectGroup);
         StringBuilder selectClass = new StringBuilder();
@@ -196,7 +209,7 @@ public class LabelActivity extends AppCompatActivity {
         return getString(resId);
     }
 
-    public void loadFileList() {
+    public void loadFileList() { //1.建立json檔(如果json檔不存在) 2.建立files陣列，裡面存了所有音檔的絕對路徑 3.呼叫update_text_selectGroup更新介面(並讀取其內容存在jsonData)
         int READ_EXTERNAL_STORAGE = 100;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE);
@@ -212,9 +225,10 @@ public class LabelActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        File directory = new File(path);
-        files = directory.listFiles();
 
+        File directory = new File(path);
+        files = directory.listFiles(new ImageFileFilter());
+        Arrays.sort(files);
         List<File> files_list = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
@@ -222,8 +236,6 @@ public class LabelActivity extends AppCompatActivity {
             String filePath = file.getPath();
             if (filePath.split("/")[filePath.split("/").length - 1].split("_").length == 5) {
                 files_list.add(file);
-            } else {
-                files[i] = null;
             }
         }
         files = files_list.toArray(new File[0]);
@@ -232,6 +244,9 @@ public class LabelActivity extends AppCompatActivity {
             select_file_max = files.length - 1;
             update_text_selectGroup();
         }
+
+
+
     }
 
     void createExternalStoragePrivateJson(String filename) {
@@ -265,8 +280,7 @@ public class LabelActivity extends AppCompatActivity {
         return false;
     }
 
-    public void saveJson2Phone(String filename, JSONObject JsonObject) {
-
+    public void saveJson2Phone(String filename, @NonNull JSONObject JsonObject) {
         String userString = JsonObject.toString();
         File path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(path, filename);
@@ -280,7 +294,6 @@ public class LabelActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public String readJsonFromPhone(String filename) {
@@ -295,4 +308,18 @@ public class LabelActivity extends AppCompatActivity {
         }
         return line;
     }
+
+    public class ImageFileFilter implements FileFilter {
+        private final String[] okFileExtensions = new String[] { "wav"};
+
+        public boolean accept(File file) {
+            for (String extension : okFileExtensions) {
+                if (file.getName().toLowerCase().endsWith(extension)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 }
