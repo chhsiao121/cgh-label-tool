@@ -123,13 +123,18 @@ public class LabelActivity extends AppCompatActivity {
 
     protected void onStop() {
         super.onStop();
-        mediaPlayer.release();
-        mediaPlayer = null;
+        if(mediaPlayer!=null){
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
     }
 
     public void playAudio() {
         if (f_first_play)
-            this.mediaPlayer.release();
+            if(this.mediaPlayer!=null){
+                this.mediaPlayer.release();
+            }
         else
             f_first_play = false;
         this.mediaPlayer = new MediaPlayer();
@@ -181,7 +186,9 @@ public class LabelActivity extends AppCompatActivity {
         String nn = (select_file + 1) + " / " + (select_file_max + 1);
         textFileNumber.setText(nn);
         //這裡如果tmp所得到的字卡編號，不在res/values/strings.xml所宣告的字卡中，等等getStringResourceByName所拿到的resid會有問題
-        String tmp = "wordcard" + files[select_file].getName().split("_")[1] + "_" + files[select_file].getName().split("_")[2];
+//        String tmp = "wordcard" + files[select_file].getName().split("_")[1] + "_" + files[select_file].getName().split("_")[2];
+        String tmp = files[select_file].getName();
+        tmp = tmp.substring(0,tmp.lastIndexOf("."));
         textClassName.setText(getStringResourceByName(tmp));
     }
 
@@ -234,11 +241,13 @@ public class LabelActivity extends AppCompatActivity {
             File file = files[i];
             /*It's assumed that all file in the path are in supported type*/
             String filePath = file.getPath();
-            if (filePath.split("/")[filePath.split("/").length - 1].split("_").length == 5) {
+            String fileName = file.getName();
+            String fileTyle=fileName.substring(fileName.lastIndexOf("."));
+            if (fileTyle.equals(".wav")) {
                 files_list.add(file);
             }
         }
-        files = files_list.toArray(new File[0]);
+        files = files_list.toArray(new File[0]); //把ArrayList轉成File[](files_list.get(1) = files[1])
 
         if (directory.canRead() && files != null) {
             select_file_max = files.length - 1;

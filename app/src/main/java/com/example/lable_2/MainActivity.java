@@ -1,8 +1,13 @@
 package com.example.lable_2;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,17 +19,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-
-import static com.example.lable_2.BuildConfig.VERSION_NAME;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,14 +61,26 @@ public class MainActivity extends AppCompatActivity {
         Button buttonExit = findViewById(R.id.buttonExit);
         buttonOpen.setOnClickListener(v -> openFileChooser());
         buttonLabel.setOnClickListener(this::startLabel);
-        buttonUpload.setOnClickListener(v -> uploadFile());
+        buttonUpload.setOnClickListener(v -> {
+            if (networkIsConnect()) uploadFile();
+            else Toast.makeText(getApplicationContext(), "請開啟網路，再重新上傳數據", Toast.LENGTH_SHORT).show();
+        });
         buttonExit.setOnClickListener(v -> {
             finish();
             System.exit(0);
         });
-        TextView versionName = findViewById(R.id.textAPPVersion);
-        versionName.setText(String.format("version : %s", VERSION_NAME));
 
+
+    }
+
+    private boolean networkIsConnect(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null){
+            return networkInfo.isConnected();
+        }else {
+            return false;
+        }
     }
 
     public void uploadFile() {
@@ -76,15 +97,45 @@ public class MainActivity extends AppCompatActivity {
                     Uri jsonUri = Uri.fromFile(f);
                     String fileName = jsonUri.toString().split("/")[jsonUri.toString().split("/").length - 1];
 //                    Log.e("name", fileName);
-                    final String uploadName = System.currentTimeMillis() + "." + VERSION_NAME + userName.getText() + "." + fileName;
+//                    final String uploadName = System.currentTimeMillis() + "."  + userName.getText() + "_" + fileName;
+                    final String uploadName = userName.getText() + "_" + fileName;
                     Log.e("save_name", uploadName);
                     StorageReference Ref = mStorageRef.child(uploadName);
-                    Ref.putFile(jsonUri)
-                            .addOnSuccessListener(taskSnapshot -> {
-//                                Log.e("TAG", "Upload succesFully");
-                                Toast.makeText(getApplicationContext(), uploadName + "上傳成功", Toast.LENGTH_LONG).show();
-                            })
-                            .addOnFailureListener(exception -> Toast.makeText(getApplicationContext(), "保存失敗Q", Toast.LENGTH_LONG).show());
+                    UploadTask uploadTask = Ref.putFile(jsonUri);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage(fileName+"上傳失敗，請重新點選上傳按鈕進行上傳");
+                            builder.setTitle("上傳結果");
+                            builder.setPositiveButton("收到", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(getApplicationContext(), fileName + "如果持續上傳失敗請聯絡開發者:m11002129@mail.ntust.edu.tw", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                            // Handle unsuccessful uploads
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                            // ...
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage(uploadName+"已上傳成功");
+                            builder.setTitle("上傳結果");
+                            builder.setPositiveButton("收到", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(getApplicationContext(), uploadName + "上傳成功", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
                 }
             }
         }
