@@ -2,17 +2,18 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
 }
+apply from: "${rootDir}/gradle/versionTimeStamps.gradle"
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+//    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.ntust.label_only_2"
+        applicationId "com.ntust.chhsiao.label_only_2"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 7
-        versionName "7.0"
+        versionCode getVersionCodeTimeStamps()
+        versionName "8.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

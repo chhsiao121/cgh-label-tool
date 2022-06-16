@@ -193,7 +193,7 @@ public class LabelActivity extends AppCompatActivity {
     }
 
 
-    public void saveSelect2json() { //將此頁面上所對應的音檔與所選取的類別寫進jsonData，如果沒有類別則為""(jsonData尚未儲存成.json檔)
+    public void saveSelect2json() { //將此頁面上所對應的音檔與所選取的類別寫進jsonData，如果沒有錯誤類別則為""(jsonData尚未儲存成.json檔)
 
         ChipGroup selectGroup = findViewById(R.id.selectGroup);
         StringBuilder selectClass = new StringBuilder();
@@ -249,9 +249,11 @@ public class LabelActivity extends AppCompatActivity {
         }
         files = files_list.toArray(new File[0]); //把ArrayList轉成File[](files_list.get(1) = files[1])
 
-        if (directory.canRead() && files != null) {
+        if ((directory.canRead()) && (files != null) && (files.length != 0)) {
             select_file_max = files.length - 1;
             update_text_selectGroup();
+        }else{
+            Toast.makeText(this, "親，選擇資料夾裡面沒有.wav音檔喔，APP會壞掉", Toast.LENGTH_SHORT).show();
         }
 
 
