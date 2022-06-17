@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private String PATH;
     private Boolean f_load = Boolean.FALSE;
-
+    private Button buttonUpload;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,13 +56,14 @@ public class MainActivity extends AppCompatActivity {
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         Button buttonOpen = findViewById(R.id.buttonOpen);
-        Button buttonUpload = findViewById(R.id.buttonUploadn);
+        buttonUpload = findViewById(R.id.buttonUploadn);
         Button buttonLabel = findViewById(R.id.buttonLabel);
         Button buttonExit = findViewById(R.id.buttonExit);
         buttonOpen.setOnClickListener(v -> openFileChooser());
         buttonLabel.setOnClickListener(this::startLabel);
         buttonUpload.setOnClickListener(v -> {
             if (networkIsConnect()) uploadFile();
+
             else Toast.makeText(getApplicationContext(), "請開啟網路，再重新上傳數據", Toast.LENGTH_SHORT).show();
         });
         buttonExit.setOnClickListener(v -> {
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 String json_name = PATH.split("/")[PATH.split("/").length - 1] + ".json";
                 File upload_file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), json_name);
                 if (upload_file.exists()) {
+                    buttonUpload.setEnabled(false);
                     String uploadName = userName + "_" + json_name;
                     Uri jsonUri = Uri.fromFile(upload_file);
                     Log.e("save_name", uploadName);
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
+                buttonUpload.setEnabled(true);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage(json_name + "上傳失敗，請重新點選上傳按鈕進行上傳");
                 builder.setTitle("上傳結果");
@@ -133,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
+                buttonUpload.setEnabled(true);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage(uploadName + "已上傳成功");
                 builder.setTitle("上傳結果");
