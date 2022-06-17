@@ -149,14 +149,15 @@ public class LabelActivity extends AppCompatActivity {
             mediaPlayer.setDataSource(getApplicationContext(), myUri);
             mediaPlayer.prepare();
             mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    mp.release();
+                };
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-
-
 
 
     public void update_text_selectGroup() { //靠select_file設定label介面上的音檔名稱、字卡名稱、第幾個音檔，並更新ChipGroup裡的label
