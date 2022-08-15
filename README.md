@@ -2,6 +2,7 @@
 
 This APP is used for CGH dataset labeling.
 
-![Image](app/src/screen1.png)
-![Image](app/src/screen2.png)
-
+<p float="left">
+  <img src="app/src/screen1.png?raw=true" width="250" />
+  <img src="app/src/screen2.png?raw=true" width="250" />
+</p>
