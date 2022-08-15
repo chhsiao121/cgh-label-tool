@@ -2,4 +2,6 @@
 
 This APP is used for CGH dataset labeling.
 
-![Image](../../blob/master/Screenshot.png?raw=true)
+![Image](app/src/screen1.png)
+![Image](app/src/screen2.png)
+
