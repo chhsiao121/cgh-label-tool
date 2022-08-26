@@ -1,0 +1,7 @@
+
+ext.getVersionCodeTimeStamps = { ->
+    def date = new Date()
+    def formattedDate = date.format('yyMMddHH')
+    def result = formattedDate.toInteger()
+    return result
+}
