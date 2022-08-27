@@ -33,6 +33,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -45,10 +46,16 @@ public class MainActivity extends AppCompatActivity {
     private String PATH;
     private Boolean f_load = Boolean.FALSE;
     private Button buttonUpload;
+    public ArrayList<String> testType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        testType = new ArrayList<>();
+        testType.add("stopping");
+        testType.add("backing");
+        testType.add("affricate");
+        testType.add("fricative");
         int READ_EXTERNAL_STORAGE = 100;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE);
@@ -112,7 +119,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void uploadjson(Uri jsonUri, String uploadName, String json_name){
-        StorageReference Ref = mStorageRef.child(uploadName);
+        int uplodaIdx = uploadName.split("_").length - 1;
+        String uploadTestType = uploadName.split("_")[uplodaIdx - 1];
+        StorageReference Ref;
+        if(testType.contains(uploadTestType)){
+            Ref = mStorageRef.child("test/"+uploadName);
+        }
+        else{
+            Ref = mStorageRef.child(uploadName);
+        }
+
+
         UploadTask uploadTask = Ref.putFile(jsonUri);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
