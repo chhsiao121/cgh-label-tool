@@ -93,10 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void uploadFile() {
         EditText editUsername = findViewById(R.id.userName);
-        final String userName = editUsername.getText().toString();
+        String userName = editUsername.getText().toString();
         if (TextUtils.isEmpty(userName)) {
             editUsername.setError(REQUIRED);
         } else {
+            userName = userName.replaceAll("\\s", "");
             if(f_load) {
                 String json_name = PATH.split("/")[PATH.split("/").length - 1] + ".json";
                 File upload_file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), json_name);
